@@ -32,7 +32,8 @@ as $$
       'id', q.obj->>'id',
       'title', q.obj->'title',
       'options', q.obj->'options',
-      'images', q.obj->'images'
+      'images', (select coalesce(jsonb_agg(to_jsonb((q.obj->>'id') || '_' || (im.ord-1)) order by im.ord), '[]'::jsonb)
+                 from jsonb_array_elements_text(coalesce(q.obj->'images','[]'::jsonb)) with ordinality im(val,ord))
     ) order by q.ord
   ), '[]'::jsonb)
   from public.quiz_content c,
