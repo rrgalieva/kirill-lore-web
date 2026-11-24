@@ -26,20 +26,17 @@
   },
   {
     "id": "bags",
-    "title": "Какая фотография с брендами на сумках настоящая?",
+    "title": "Какой бренд на этих сумках?",
     "options": [
-      "Фото A",
-      "Фото Б",
-      "Фото В",
-      "Фото Г"
+      "Dickies",
+      "Carhartt",
+      "The North Face",
+      "Stussy"
     ],
     "correct": 1,
-    "note": "Оригинал: Carhartt WIP на обеих сумках.",
+    "note": "На обеих сумках — Carhartt.",
     "images": [
-      "bags_c",
-      "bags_real",
-      "bags_a",
-      "bags_b"
+      "bags_brand"
     ]
   },
   {
