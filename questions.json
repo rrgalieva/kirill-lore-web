@@ -86,13 +86,13 @@
       "Фото В",
       "Фото Г"
     ],
-    "correct": 2,
+    "correct": 0,
     "note": "В оригинале были Егермейстер, йогурт «Чудо» и пицца.",
     "images": [
-      "fridge_a",
-      "fridge_c",
-      "fridge_real",
-      "fridge_b"
+      "fridge_1",
+      "fridge_2",
+      "fridge_3",
+      "fridge_4"
     ]
   },
   {
