@@ -97,16 +97,18 @@
   },
   {
     "id": "nas",
-    "title": "Кто был общим любимым исполнителем Кирилла и его друга?",
+    "title": "Ниже, любимый исполнитель (гей) Кирилла и Пети, кто это?",
     "options": [
-      "Lil Nas X",
-      "The Weeknd",
-      "Frank Ocean",
-      "Tyler, The Creator"
+      "трил пил",
+      "лил нас х",
+      "пип лал 3",
+      "мин пин икс"
     ],
-    "correct": 0,
+    "correct": 1,
     "note": "",
-    "images": []
+    "images": [
+      "nas_photo"
+    ]
   },
   {
     "id": "saga",
