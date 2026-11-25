@@ -1,0 +1,24 @@
+name: Import question 8 photo (one-time)
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.event.head_commit.message == 'Import question 8 photo via one-time workflow'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download supplied photo
+        run: |
+          mkdir -p assets
+          curl --fail --location --silent --show-error --retry 2 'https://pikaso.cdnpk.net/private/production/6151327281/3919516978.jpg?token=exp=1795996800~hmac=a4d9d305fe01d00ad15b9ba96a0f78ff38e9746b0675829d0f07acc595164743' --output assets/nas_photo.jpg
+          test "$(wc -c < assets/nas_photo.jpg)" -gt 1000
+      - name: Commit question 8 photo
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/nas_photo.jpg
+          git commit -m "Add question 8 photo"
+          git push
