@@ -1,0 +1,30 @@
+name: Import refrigerator photos (one-time)
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  import:
+    if: github.event.head_commit.message == 'Import fridge photos via one-time workflow'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download four authorized photos
+        run: |
+          mkdir -p assets
+          curl --fail --location --silent --show-error --retry 2 'https://pikaso.cdnpk.net/private/production/6151291385/3919501070.jpg?token=exp=1795996800~hmac=842ed9409856981f3c28334d286c0cc8a38b868e191d6dcf396a69e07175fe11' --output 'assets/fridge_1.jpg'
+          test "$(wc -c < 'assets/fridge_1.jpg')" -gt 1000
+          curl --fail --location --silent --show-error --retry 2 'https://pikaso.cdnpk.net/private/production/6151291626/3919501186.jpg?token=exp=1795996800~hmac=670d36b99b0d3bb5eeed59699ffb1b6e3471113dfa09df3c0d66bbaa278c6db0' --output 'assets/fridge_2.jpg'
+          test "$(wc -c < 'assets/fridge_2.jpg')" -gt 1000
+          curl --fail --location --silent --show-error --retry 2 'https://pikaso.cdnpk.net/private/production/6151291855/3919501342.jpg?token=exp=1795996800~hmac=535f47d06f70bfca184d8ea9d8dfc8f17d9f05ddd931b9509e74b29c4b5634e1' --output 'assets/fridge_3.jpg'
+          test "$(wc -c < 'assets/fridge_3.jpg')" -gt 1000
+          curl --fail --location --silent --show-error --retry 2 'https://pikaso.cdnpk.net/private/production/6151292158/3919501487.jpg?token=exp=1795996800~hmac=059436a995954874fafb49fe7d3040c11c5784f87ca7fb7ac9e5e337ff751fb8' --output 'assets/fridge_4.jpg'
+          test "$(wc -c < 'assets/fridge_4.jpg')" -gt 1000
+      - name: Commit four refrigerator photos
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/fridge_1.jpg assets/fridge_2.jpg assets/fridge_3.jpg assets/fridge_4.jpg
+          git commit -m "Add four refrigerator photos"
+          git push
