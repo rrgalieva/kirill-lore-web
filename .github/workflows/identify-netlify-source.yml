@@ -41,4 +41,16 @@ jobs:
           for asset in assets/nas_photo.jpg assets/fridge_1.jpg assets/bags-brand.svg; do
              echo "$asset HTTP=$(curl -L -s -o /dev/null -w '%{http_code}' --max-time 20 "https://soft-seahorse-fdef96.netlify.app/$asset")"
           done
-          echo "PUBLIC_SITE_API_HTTP=$(curl -L -s -o /dev/null -w '%{http_code}' --max-time 20 'https://api.netlify.com/api/v1/sites/soft-seahorse-fdef96.netlify.app')"
+          curl -fsSL --max-time 20 'https://api.netlify.com/api/v1/sites/soft-seahorse-fdef96.netlify.app' -o /tmp/netlify.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/netlify.json').read_text())
+          for k in ['id','name','url','ssl_url','admin_url','repo_url','state','updated_at','published_deploy','build_settings']:
+            v=d.get(k)
+            if k=='published_deploy' and isinstance(v,dict):
+              v={kk:v.get(kk) for kk in ['id','state','created_at','published_at','commit_ref','branch','commit_url','title']}
+            if k=='build_settings' and isinstance(v,dict):
+              v={kk:v.get(kk) for kk in ['provider','repo_url','repo_branch','repo_path','repo_slug','base','dir','cmd','allowed_branches','stop_builds']}
+            print('SITE_'+k+'='+str(v))
+          PY
