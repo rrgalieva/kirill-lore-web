@@ -54,3 +54,15 @@ jobs:
               v={kk:v.get(kk) for kk in ['provider','repo_url','repo_branch','repo_path','repo_slug','base','dir','cmd','allowed_branches','stop_builds']}
             print('SITE_'+k+'='+str(v))
           PY
+          curl -sSL --max-time 20 -w '\nDEPLOY_LIST_HTTP=%{http_code}\n' 'https://api.netlify.com/api/v1/sites/37bb45da-019e-473f-bb6f-811f568f91e5/deploys?per_page=15' -o /tmp/deploys.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/deploys.json').read_text())
+          print('DEPLOY_LIST_TYPE='+str(type(d).__name__))
+          if isinstance(d,list):
+            for x in d[:12]:
+              print('DEPLOY_ROW='+str({k:x.get(k) for k in ['id','state','commit_ref','branch','title','created_at','published_at','error_message','context','skipped']}))
+          elif isinstance(d,dict):
+            print('DEPLOY_LIST_ERROR='+str({k:d.get(k) for k in ['code','message','error','status']}))
+          PY
