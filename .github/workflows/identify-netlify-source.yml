@@ -77,3 +77,14 @@ jobs:
               print('DETAIL_'+k+'='+str(d.get(k))[:500])
           PY
           echo "DEPLOY_LOG_HTTP=$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 20 'https://api.netlify.com/api/v1/deploys/6b0a42c358869c11cfa397e3/log')"
+          curl -sSL --max-time 20 -w '\nBUILD_DETAIL_HTTP=%{http_code}\n' 'https://api.netlify.com/api/v1/builds/6b0a42c358869c11cfa397e1' -o /tmp/build.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          try: d=json.loads(Path('/tmp/build.json').read_text())
+          except Exception as e: print('BUILD_ERROR_PARSE='+str(e)); d={}
+          if isinstance(d,dict):
+            print('BUILD_KEYS='+str(sorted(d.keys())))
+            for k in ['id','state','status','error','error_message','failure_reason','deploy_id','created_at','done','title','message','skipped','error_type']:
+              print('BUILD_'+k+'='+str(d.get(k))[:500])
+          PY
