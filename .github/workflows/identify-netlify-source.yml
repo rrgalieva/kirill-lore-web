@@ -1,0 +1,44 @@
+name: Identify current Netlify production version
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event.head_commit.message == 'Identify Netlify production source'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Diagnose live publication
+        run: |
+          set -e
+          curl -fsSL --max-time 20 'https://soft-seahorse-fdef96.netlify.app/?versioncheck=20261128' -o /tmp/live.html
+          echo "LIVE_BYTES=$(wc -c < /tmp/live.html)"
+          echo "CURRENT_REPO_BYTES=$(wc -c < index.html)"
+          echo "LIVE_SHA256=$(sha256sum /tmp/live.html | cut -d' ' -f1)"
+          echo "REPO_SHA256=$(sha256sum index.html | cut -d' ' -f1)"
+          if cmp -s /tmp/live.html index.html; then echo EXACTLY_LIVE_HEAD=YES; else echo EXACTLY_LIVE_HEAD=NO; fi
+          for sha in $(git log -40 --format=%H -- index.html); do
+            git show "$sha:index.html" >/tmp/candidate.html
+            if cmp -s /tmp/live.html /tmp/candidate.html; then echo "MATCHED_PUBLIC_COMMIT=$sha"; break; fi
+          done
+          python3 - <<'PY'
+          from pathlib import Path
+          s=Path('/tmp/live.html').read_text(errors='replace')
+          for name,phrase in [
+           ('NEW_Q8','Ниже, любимый исполнитель'),
+           ('OLD_Q8','Кто был общим любимым исполнителем'),
+           ('FRIDGE_PHOTOS','fridge_1'),
+           ('BAGS_PHOTO','bags-brand.svg'),
+           ('NEW_HOME','Насколько ты погружен в его бэнгеры'),
+           ('DENISKA','Дениской'),
+           ('KIRYUSHKA_HERO','kiryushka-main.webp'),
+          ]: print(f'{name}={phrase in s}')
+          PY
+          for asset in assets/nas_photo.jpg assets/fridge_1.jpg assets/bags-brand.svg; do
+             echo "$asset HTTP=$(curl -L -s -o /dev/null -w '%{http_code}' --max-time 20 "https://soft-seahorse-fdef96.netlify.app/$asset")"
+          done
+          echo "PUBLIC_SITE_API_HTTP=$(curl -L -s -o /dev/null -w '%{http_code}' --max-time 20 'https://api.netlify.com/api/v1/sites/soft-seahorse-fdef96.netlify.app')"
