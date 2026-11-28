@@ -66,3 +66,14 @@ jobs:
           elif isinstance(d,dict):
             print('DEPLOY_LIST_ERROR='+str({k:d.get(k) for k in ['code','message','error','status']}))
           PY
+          curl -sSL --max-time 20 -w '\nDEPLOY_DETAIL_HTTP=%{http_code}\n' 'https://api.netlify.com/api/v1/deploys/6b0a42c358869c11cfa397e3' -o /tmp/deploy.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/deploy.json').read_text())
+          if isinstance(d,dict):
+            print('DEPLOY_KEYS='+str(sorted(d.keys())))
+            for k in ['state','error_message','error','failure_reason','deploy_time','context','review_id','skipped','summary','build_id','build_settings','framework','title','commit_ref','created_at','published_at','admin_url','deploy_ssl_url','required']:
+              print('DETAIL_'+k+'='+str(d.get(k))[:500])
+          PY
+          echo "DEPLOY_LOG_HTTP=$(curl -sSL -o /dev/null -w '%{http_code}' --max-time 20 'https://api.netlify.com/api/v1/deploys/6b0a42c358869c11cfa397e3/log')"
